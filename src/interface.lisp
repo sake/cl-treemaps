@@ -17,14 +17,40 @@
 
 (in-package :cl-treemaps)
 
-(defgeneric make-tree ()
+
+(defclass tree-map ()
+  ()
+  (:documentation "Base class for a tree map."))
+
+
+;;;
+;;; public interface functions
+;;;
+
+(defun make-tree (&key (test #'<) (type :binary))
+  (make-tree-intern test type))
+
+(defgeneric get-tree-entry (tree key)
   (:documentation ""))
 
-(defgeneric get-tree-entry ()
-  (:documentation ""))
+(defgeneric del-tree-entry (tree key)
+  (:documentation "Remove a single element specified by key from a tree."))
 
-(defgeneric del-tree-entry ()
-  (:documentation ""))
+(defgeneric clr-tree (tree)
+  (:documentation "Remove all elements from a tree."))
 
-(defgeneric clr-tree ()
-  (:documentation ""))
+(defsetf get-tree-entry update-tree-entry)
+
+
+;;;
+;;; internal functions
+;;;
+
+(defgeneric make-tree-intern (test type)
+  (:documentation "Create a new tree map."))
+
+(defgeneric update-tree-entry (tree key value)
+  (:documentation "Insert a new key value pair into the tree."))
+
+(defgeneric compare (tree a b)
+  (:documentation "Compare element a and b with the tree's test function."))

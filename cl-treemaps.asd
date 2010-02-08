@@ -22,6 +22,7 @@
 
 (in-package :cl-treemaps-system)
 
+
 (defsystem cl-treemaps
   :name "cl-treemaps"
   :description "Common Lisp binary trees"
@@ -37,7 +38,7 @@
 	    :components
 	    ((:file "package")
 	     (:file "interface")
-	     (:file "red-black")))))
+	     (:file "binary")))))
 
 
 ;; method to call tests

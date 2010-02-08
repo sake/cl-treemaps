@@ -18,7 +18,7 @@
 (in-package :cl-user)
 
 
-(defpackage clon-db
+(defpackage cl-treemaps
   (:documentation "Common Lisp binary trees")
   (:use :cl)
   ;; tree operations
