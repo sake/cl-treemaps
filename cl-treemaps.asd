@@ -38,7 +38,8 @@
 	    :components
 	    ((:file "package")
 	     (:file "interface")
-	     (:file "binary")))))
+	     (:file "binary")
+	     (:file "redblack")))))
 
 
 ;; method to call tests

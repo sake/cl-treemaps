@@ -27,19 +27,19 @@
 ;;; public interface functions
 ;;;
 
-(defun make-tree (&key (test #'<) (type :binary))
+(defun make-tree (&key (test #'<) (type :red-black))
   (make-tree-intern test type))
-
-(defgeneric get-tree-entry (tree key)
-  (:documentation ""))
-
-(defgeneric del-tree-entry (tree key)
-  (:documentation "Remove a single element specified by key from a tree."))
 
 (defgeneric clr-tree (tree)
   (:documentation "Remove all elements from a tree."))
 
-(defsetf get-tree-entry update-tree-entry)
+(defgeneric get-tree-entry (tree key &optional value)
+  (:documentation "Get the value for a given key, or insert/update if a value is supplied."))
+
+(defgeneric del-tree-entry (tree key)
+  (:documentation "Remove a single element specified by key from a tree."))
+
+(defsetf get-tree-entry get-tree-entry)
 
 
 ;;;
@@ -48,9 +48,3 @@
 
 (defgeneric make-tree-intern (test type)
   (:documentation "Create a new tree map."))
-
-(defgeneric update-tree-entry (tree key value)
-  (:documentation "Insert a new key value pair into the tree."))
-
-(defgeneric compare (tree a b)
-  (:documentation "Compare element a and b with the tree's test function."))
