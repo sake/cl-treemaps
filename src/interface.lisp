@@ -48,3 +48,6 @@
 
 (defgeneric make-tree-intern (test type)
   (:documentation "Create a new tree map."))
+
+(defgeneric tree-dot (tree file)
+  (:documentation "Serialise tree as dot file (graphviz)."))

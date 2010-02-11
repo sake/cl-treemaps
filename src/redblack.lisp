@@ -386,3 +386,42 @@
 				(return-from local-assert 0)))))))
     ;; call check for the tree
     (local-assert (data tree))))
+
+
+
+
+;;;
+;;; other interresting functions, but not related functionality
+;;;
+
+(defmethod tree-dot (tree file)
+  (with-open-file (stream file :direction :output :if-exists :overwrite :if-does-not-exist :create)
+    (labels ((local-header ()
+	       (write-line "digraph redblack_tree_map {" stream))
+	     (local-footer ()
+	       (write-line "}" stream))
+
+	     ;; visitor for graphviz
+	     (local-iterate (node)
+	       (cond (node ; node exists
+		      (let ((left (rb-left node))
+			    (right (rb-right node))
+			    (color-n (rb-color node)))
+			;; write node color
+			(write-line (with-output-to-string (sstream)
+				      (format sstream "~A [color=~A];" (rb-key node) color-n)) stream)
+			;; left node present
+			(cond (left
+			       (write-line (with-output-to-string (sstream)
+					     (format sstream "~A -> ~A;" (rb-key node) (rb-key left))) stream)
+			       (local-iterate left)))
+			;; right node present
+			(cond (right
+			       (write-line (with-output-to-string (sstream)
+					     (format sstream "~A -> ~A;" (rb-key node) (rb-key right))) stream)
+			       (local-iterate right))))))))
+
+      ;; call functions which write this stuff
+      (local-header)
+      (local-iterate (data tree))
+      (local-footer))))
