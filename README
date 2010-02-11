@@ -1,0 +1,12 @@
+README: cl-treemaps
+===================
+
+cl-treemaps is an implementation of binary trees for Common Lisp. The interface
+is derived from the Common Lisp hash-table.
+
+
+Dependencies
+============
+
+The cl-treemaps package doesn't have any dependencies. The test part however
+needs FiveAM.

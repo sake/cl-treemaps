@@ -21,5 +21,7 @@
 (defpackage cl-treemaps
   (:documentation "Common Lisp binary trees")
   (:use :cl)
+  ;; tree classes
+  (:export tree-map redblack-tree-map)
   ;; tree operations
   (:export make-tree get-tree-entry del-tree-entry clr-tree))

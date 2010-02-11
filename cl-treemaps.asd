@@ -26,19 +26,15 @@
 (defsystem cl-treemaps
   :name "cl-treemaps"
   :description "Common Lisp binary trees"
-;  :long-description "Clon is a name derived from JSON and is in fact a object persitance layer which uses an
-;  underlying database technology to realise the persitance."
   :author "Tobias Wich <tobias.wich@electrologic.org>"
   :version "0.1"
   :license "BSD"
-;  :depends-on (flexi-streams ieee-floats cl-containers)
   :components
   ((:module src
 	    :serial t
 	    :components
 	    ((:file "package")
 	     (:file "interface")
-	     (:file "binary")
 	     (:file "redblack")))))
 
 

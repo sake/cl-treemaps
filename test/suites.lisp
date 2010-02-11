@@ -19,4 +19,4 @@
 
 
 (defun run-all-suites ()
-  (run-clon-db-tests))
+  (run! 'redblack-tests))

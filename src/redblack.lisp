@@ -17,11 +17,12 @@
 
 (in-package :cl-treemaps)
 
-;; (declaim (optimize (debug 3)))
 (declaim (optimize (debug 0)
 		   (safety 0)
 		   (speed 3)
 		   (compilation-speed 0)))
+
+
 
 (defclass redblack-tree-map (tree-map)
   ((data    :accessor data :initform nil
@@ -29,6 +30,108 @@
    (testfun :accessor testfun :initarg :testfun :initform (error "No test function specified.")))
   (:documentation "Red-Black tree implementation."))
 
+
+
+;;;
+;;; internal helper functions
+;;;
+
+(defun rb-key (node &optional (value nil update?))
+  (if update?
+      (setf (first node) value)
+      (first node)))
+(defsetf rb-key rb-key)
+
+(defun rb-value (node &optional (value nil update?))
+  (if update?
+      (setf (second node) value)
+      (second node)))
+(defsetf rb-value rb-value)
+
+
+(defun rb-color (node &optional (value nil update?))
+  (if update?
+      (setf (third node) value)
+      (third node)))
+(defsetf rb-color rb-color)
+
+(defun is-red (node)
+  (and node
+       (eq (rb-color node) 'red)))
+
+(defun is-black (node)
+  (not (is-red node)))
+
+
+(defun rb-child (node direction &optional (value nil update?))
+  (if (eq direction 'left)
+      ;; get left child
+      (if update?
+	  (setf (fourth node) value)
+	  (fourth node))
+      ;; get right child
+      (if update?
+	  (setf (fifth node) value)
+	  (fifth node))))
+(defsetf rb-child rb-child)
+
+(defun rb-left (node &optional (value nil update?))
+  (if update?
+      (setf (rb-child node 'left) value)
+      (rb-child node 'left)))
+(defsetf rb-left rb-left)
+
+(defun rb-right (node &optional (value nil update?))
+  (if update?
+      (setf (rb-child node 'right) value)
+      (rb-child node 'right)))
+(defsetf rb-right rb-right)
+
+
+(defun not-dir (direction)
+  (if (eq direction 'left)
+      'rigth
+      'left))
+
+
+(defun rb-rotate-single (root direction)
+  (let ((save (rb-child root (not-dir direction))))
+    ;; rotate
+    (setf (rb-child root (not-dir direction)) (rb-child save direction))
+    (setf (rb-child save direction) root)
+    ;; recolor
+    (setf (rb-color root) 'red)
+    (setf (rb-color save) 'black)
+    save))
+
+(defun rb-rotate-double (root direction)
+  (setf (rb-child root (not-dir direction))
+	(rb-rotate-single (rb-child root (not-dir direction)) (not-dir direction)))
+  (rb-rotate-single root direction))
+
+
+(defun rb-make-node (key &optional (value nil))
+  (list key value 'red nil nil))
+
+(defun rb-make-empty-node ()
+  (list nil nil 'red nil nil))
+
+
+(defun rb-set-node (old new)
+  "Overwrite old node with new node. This is needed because pointers are not available."
+  (setf (rb-key old) (rb-key new))
+  (setf (rb-value old) (rb-value new))
+  (setf (rb-color old) (rb-color new))
+  (setf (rb-left old) (rb-left new))
+  (setf (rb-right old) (rb-right new))
+  nil)
+
+
+
+
+;;;
+;;; public interface functions
+;;;
 
 (defmethod make-tree-intern ((test function) (type (eql :red-black)))
   (let (tree)
@@ -221,102 +324,6 @@
 
 
 
-
-;;;
-;;; internal helper functions
-;;;
-
-(defun rb-key (node &optional (value nil update?))
-  (if update?
-      (setf (first node) value)
-      (first node)))
-(defsetf rb-key rb-key)
-
-(defun rb-value (node &optional (value nil update?))
-  (if update?
-      (setf (second node) value)
-      (second node)))
-(defsetf rb-value rb-value)
-
-
-(defun rb-color (node &optional (value nil update?))
-  (if update?
-      (setf (third node) value)
-      (third node)))
-(defsetf rb-color rb-color)
-
-(defun is-red (node)
-  (and node
-       (eq (rb-color node) 'red)))
-
-(defun is-black (node)
-  (not (is-red node)))
-
-
-(defun rb-child (node direction &optional (value nil update?))
-  (if (eq direction 'left)
-      ;; get left child
-      (if update?
-	  (setf (fourth node) value)
-	  (fourth node))
-      ;; get right child
-      (if update?
-	  (setf (fifth node) value)
-	  (fifth node))))
-(defsetf rb-child rb-child)
-
-(defun rb-left (node &optional (value nil update?))
-  (if update?
-      (setf (rb-child node 'left) value)
-      (rb-child node 'left)))
-(defsetf rb-left rb-left)
-
-(defun rb-right (node &optional (value nil update?))
-  (if update?
-      (setf (rb-child node 'right) value)
-      (rb-child node 'right)))
-(defsetf rb-right rb-right)
-
-
-(defun not-dir (direction)
-  (if (eq direction 'left)
-      'rigth
-      'left))
-
-
-(defun rb-rotate-single (root direction)
-  (let ((save (rb-child root (not-dir direction))))
-    ;; rotate
-    (setf (rb-child root (not-dir direction)) (rb-child save direction))
-    (setf (rb-child save direction) root)
-    ;; recolor
-    (setf (rb-color root) 'red)
-    (setf (rb-color save) 'black)
-    save))
-
-(defun rb-rotate-double (root direction)
-  (setf (rb-child root (not-dir direction))
-	(rb-rotate-single (rb-child root (not-dir direction)) (not-dir direction)))
-  (rb-rotate-single root direction))
-
-
-(defun rb-make-node (key &optional (value nil))
-  (list key value 'red nil nil))
-
-(defun rb-make-empty-node ()
-  (list nil nil 'red nil nil))
-
-
-(defun rb-set-node (old new)
-  "Overwrite old node with new node. This is needed because pointers are not available."
-  (setf (rb-key old) (rb-key new))
-  (setf (rb-value old) (rb-value new))
-  (setf (rb-color old) (rb-color new))
-  (setf (rb-left old) (rb-left new))
-  (setf (rb-right old) (rb-right new))
-  nil)
-
-
 ;;;
 ;;; test helpers
 ;;;
@@ -341,7 +348,7 @@
 	   ;; check function
 	   (local-assert (root)
 		    (let ((lh 0) (rh 0))
-;		      (declare (type integer lh rh))
+		      (declare (type integer lh rh))
 		      (if (not root)
 			  (return-from local-assert 1)
 			  ;; else
