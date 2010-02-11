@@ -17,11 +17,11 @@
 
 (in-package :cl-treemaps)
 
-(declaim (optimize (debug 3)))
-;; (declaim (optimize (debug 0)
-;; 		   (safety 0)
-;; 		   (speed 3)
-;; 		   (compilation-speed 0)))
+;; (declaim (optimize (debug 3)))
+(declaim (optimize (debug 0)
+		   (safety 0)
+		   (speed 3)
+		   (compilation-speed 0)))
 
 (defclass redblack-tree-map (tree-map)
   ((data    :accessor data :initform nil
@@ -130,12 +130,97 @@
 	       ;; make root black
 	       (setf (rb-color (data tree)) 'black)))
 
+      ;; call method depending on update? value
       (cond (update?
 	     (local-insert))
 	    (t
 	     (local-search (data tree)))))
     (values ret-val ret-status)))
-		     
+
+
+(defmethod del-tree-entry ((tree redblack-tree-map) key)
+  (let (node-deleted)
+    (labels ((local-< (a b)
+	       (funcall (the function (testfun tree)) a b))
+	     (local-= (a b)
+	       (and (not (local-< a b))
+		    (not (local-< b a))))
+
+	     ;; delete
+	     (local-delete ()
+	       (if (data tree)
+		   (progn
+		     (let ((head (rb-make-empty-node))
+			   (q) (p) (g) ; helpers
+			   (f) ; found item
+			   (dir 'right))
+		       ;; set up helper
+		       (setf q head)
+		       (setf (rb-right q) (data tree))
+
+		       ;; search and push a red node down
+		       (loop while (rb-child q dir) do
+			    (let ((last dir))
+			      ;; update helpers
+			      (setf g p)
+			      (setf p q)
+			      (setf q (rb-child q dir))
+			      (setf dir (if (local-< (rb-key q) key) 'right 'left))
+			      ;; save found node
+			      (if (local-= (rb-key q) key)
+				  (setf f q))
+
+			      ;; push red node down
+			      (if (and (is-black q)
+				       (is-black (rb-child q dir)))
+				  (if (is-red (rb-child q (not-dir dir)))
+				      (progn
+					(setf (rb-child p last)
+					      (rb-rotate-single q dir))
+					(setf p (rb-child p last)))
+				      ;; else if
+				      (if (is-black (rb-child q (not-dir dir)))
+					  (let ((s (rb-child p (not-dir last)))
+						(dir2))
+					    (if s
+						(cond ((and (is-black (rb-child s (not-dir last)))
+							    (is-black (rb-child s last)))
+						       ;; color flip
+						       (setf (rb-color p) 'black)
+						       (setf (rb-color s) 'red)
+						       (setf (rb-color q) 'red))
+						      (t
+						       (setf dir2 (if (eq (rb-right g) p) 'right 'left))
+						       (cond ((is-red (rb-child s last))
+							      (setf (rb-child g dir2)
+								    (rb-rotate-double p last)))
+							     ((is-red (rb-child s (not-dir last)))
+							      (setf (rb-child g dir2)
+								    (rb-rotate-single p last))))
+						       ;; ensure correct coloring
+						       (setf (rb-color q)
+							     (setf (rb-color (rb-child g dir2)) 'red))
+						       (setf (rb-color (rb-left (rb-child g dir2))) 'black)
+						       (setf (rb-color (rb-right (rb-child g dir2))) 'black))))))))))
+		       ;; replace and remove if found
+		       (if f
+			   (progn
+			     (setf (rb-key f) (rb-key q))
+			     (setf (rb-child p
+					     (if (eq (rb-right p) q) 'right 'left))
+				   (rb-child q
+					     (if (not (rb-left q)) 'right 'left)))
+			     (setf node-deleted t)))
+		       ;; update root and make it black
+		       (setf (data tree) (rb-right head))
+		       (if (data tree)
+			   (setf (rb-color (data tree)) 'black)))))))
+      ;; exec delete
+      (local-delete)
+      node-deleted)))
+
+
+
 
 ;;;
 ;;; internal helper functions
@@ -255,7 +340,8 @@
 
 	   ;; check function
 	   (local-assert (root)
-		    (let (lh rh)
+		    (let ((lh 0) (rh 0))
+;		      (declare (type integer lh rh))
 		      (if (not root)
 			  (return-from local-assert 1)
 			  ;; else
@@ -293,15 +379,3 @@
 				(return-from local-assert 0)))))))
     ;; call check for the tree
     (local-assert (data tree))))
-
-
-;;;
-;;; legacy
-;;;
-
-(defun get-brother (node parent)
-  (let ((left (fourth parent))
-	(right (fifth parent)))
-    (if (eq left node)
-	right
-	left)))
