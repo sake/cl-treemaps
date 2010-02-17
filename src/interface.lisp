@@ -41,6 +41,13 @@
 
 (defsetf get-tree-entry get-tree-entry)
 
+(defgeneric split-tree (tree index)
+  (:documentation "Split a tree into two new trees. Index is a number that describes the index of the split
+node when the tree is seen as a list. The node corresponding to index is included in the second tree."))
+
+(defgeneric merge-trees (first second)
+  (:documentation "Merge the second tree into the first."))
+
 
 ;;;
 ;;; internal functions

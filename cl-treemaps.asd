@@ -40,4 +40,5 @@
 
 ;; method to call tests
 (defmethod perform ((o test-op) (c (eql (find-system 'cl-treemaps))))
+  (operate 'load-op 'cl-treemaps)
   (operate 'test-op 'cl-treemaps-test))

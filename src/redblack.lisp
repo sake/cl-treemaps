@@ -324,6 +324,46 @@
 
 
 
+(defmethod split-tree ((tree redblack-tree-map) index)
+  (let ((left-tree (make-tree :test (testfun tree) :type :red-black))
+	(right-tree (make-tree :test (testfun tree) :type :red-black))
+	(i 0))
+    ;; function to do the iteration stuff
+    (labels ((recurse-node (node)
+	       (if node
+		   (progn
+		     ;; recurse to the left
+		     (recurse-node (rb-left node))
+		     ;; add node to relating new tree
+		     (setf (get-tree-entry
+			    (if (< i index)
+				left-tree
+				right-tree)
+			    (rb-key node)) (rb-value node))
+		     (incf i) ; increment counter
+		     ;; recurse to the right
+		     (recurse-node (rb-right node))))))
+      ;; perform split
+      (recurse-node (data tree)))
+    (list left-tree right-tree)))
+
+
+(defmethod merge-trees ((first redblack-tree-map) (second redblack-tree-map))
+  ;; function to do the iteration stuff
+  (labels ((recurse-node (node)
+	     (if node
+		 (progn
+		   ;; recurse to the left
+		   (recurse-node (rb-left node))
+		   ;; add/update node in the first tree
+		   (setf (get-tree-entry first (rb-key node)) (rb-value node))
+		   ;; recurse to the right
+		   (recurse-node (rb-right node))))))
+    (recurse-node (data second)))
+  first)
+  
+
+
 ;;;
 ;;; test helpers
 ;;;

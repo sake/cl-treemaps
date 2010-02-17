@@ -52,3 +52,22 @@
 		  (is (not (zerop (cl-treemaps::rb-assert tree))))))
 	   ;; final check if tree is empty
 	   (is (not (cl-treemaps::data tree)))))))
+
+(test split-merge-tree
+  (let ((tree (make-tree :type :red-black))) ;; nothing can go wrong here
+    ;; insert values into tree
+    (loop for i from 0 to 1000 do
+	 (setf (get-tree-entry tree i) i))
+    (let (tree-list)
+      ;; split tree into equal sized halfs
+      (setf tree-list (split-tree tree 500))
+      ;; check if every half contains the correct elements
+      (loop for i from 0 to 499 do
+	   (is (= i (get-tree-entry (first tree-list) i) i)))
+      (loop for i from 500 to 999 do
+	   (is (= i (get-tree-entry (second tree-list) i) i)))
+      ;; merge all entries from second tree into first
+      (merge-trees (first tree-list) (second tree-list))
+      ;; test if all elements are now in first tree
+      (loop for i from 0 to 1000 do
+	   (is (= i (get-tree-entry (first tree-list) i) i))))))
