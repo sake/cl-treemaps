@@ -27,6 +27,7 @@
 (defclass redblack-tree-map (tree-map)
   ((data    :accessor data :initform nil
 	    :documentation "A node consists of the values key, data, color, left, right.")
+   (num-elements :accessor num-elements :initform 0)
    (testfun :accessor testfun :initarg :testfun :initform (error "No test function specified.")))
   (:documentation "Red-Black tree."))
 
@@ -136,6 +137,22 @@
 (defmethod make-tree-intern ((test function) (type (eql :red-black)))
   (let (tree)
     (setf tree (make-instance 'redblack-tree-map :testfun test))))
+
+
+(defmethod treemap-count ((tree redblack-tree-map))
+  "Quick and dirty iterate function. TODO: replace"
+  (let ((num 0))
+    (labels ((recurse-node (node)
+	       (if node
+		   (progn
+		     ;; recurse to the left
+		     (recurse-node (rb-left node))
+		     ;; count this node
+		     (incf num)
+		     ;; recurse to the right
+		     (recurse-node (rb-right node))))))
+      (recurse-node (data tree)))
+    num))
 
 
 (defmethod clr-tree ((tree redblack-tree-map))

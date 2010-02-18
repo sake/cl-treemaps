@@ -31,6 +31,9 @@
   "Tree constructor which selects the appropriate tree type depending on the type keyword."
   (make-tree-intern test type))
 
+(defgeneric treemap-count (tree)
+  (:documentation "Return the number of elements in the tree."))
+
 (defgeneric clr-tree (tree)
   (:documentation "Remove all elements from a tree."))
 

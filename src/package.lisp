@@ -24,6 +24,6 @@
   ;; tree classes
   (:export tree-map redblack-tree-map)
   ;; basic tree operations
-  (:export make-tree get-tree-entry del-tree-entry clr-tree)
+  (:export make-tree get-tree-entry del-tree-entry clr-tree treemap-count)
   ;; split and merge
   (:export split-tree merge-trees))
