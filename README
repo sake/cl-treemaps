@@ -1,12 +1,31 @@
 README: cl-treemaps
 ===================
 
-cl-treemaps is an implementation of binary trees for Common Lisp. The interface
-is derived from the Common Lisp hash-table.
+cl-treemaps is an implementation of various binary trees for Common Lisp. The
+interface is derived from the Common Lisp hash-table.
+
+Currently only red-black trees are implemented. But AA trees and possibly others
+will follow shortly in time.
 
 
 Dependencies
 ============
 
-The cl-treemaps package doesn't have any dependencies. The test part however
-needs FiveAM.
+The cl-treemaps package itself doesn't have any dependencies. The test part
+however needs FiveAM.
+
+
+Version History
+===============
+
+0.1
+===
++ Red black trees implemented with top down iterative algorithm.
+  Big credits to Julienne Walker for supplying the necesary insights.
+  (http://www.eternallyconfuzzled.com/tuts/datastructures/jsw_tut_rbtree.aspx)
++ Red black split and merge use insert to create new tree instead of reusing
+  an existing one. This will be fixed when I fully embrace the internal working
+  of the data structure.
++ Tests and examples on how to use the tree are also included.
++ The implementation is still not optimzed (see compiler warnings). Hints are
+  welcome.

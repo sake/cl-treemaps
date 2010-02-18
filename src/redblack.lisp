@@ -8,7 +8,7 @@
 ;;; 
 ;;; This library is distributed in the hope that it will be useful,
 ;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 ;;; Lesser General Public License for more details.
 ;;; 
 ;;; You should have received a copy of the GNU Lesser General Public
@@ -28,7 +28,7 @@
   ((data    :accessor data :initform nil
 	    :documentation "A node consists of the values key, data, color, left, right.")
    (testfun :accessor testfun :initarg :testfun :initform (error "No test function specified.")))
-  (:documentation "Red-Black tree implementation."))
+  (:documentation "Red-Black tree."))
 
 
 

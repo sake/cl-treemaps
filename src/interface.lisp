@@ -8,7 +8,7 @@
 ;;; 
 ;;; This library is distributed in the hope that it will be useful,
 ;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 ;;; Lesser General Public License for more details.
 ;;; 
 ;;; You should have received a copy of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 ;;;
 
 (defun make-tree (&key (test #'<) (type :red-black))
+  "Tree constructor which selects the appropriate tree type depending on the type keyword."
   (make-tree-intern test type))
 
 (defgeneric clr-tree (tree)
