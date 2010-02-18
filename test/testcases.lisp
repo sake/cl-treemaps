@@ -71,3 +71,18 @@
       ;; test if all elements are now in first tree
       (loop for i from 0 to 1000 do
 	   (is (= i (get-tree-entry (first tree-list) i) i))))))
+
+(test count-tree
+  (let ((tree (make-tree :type :red-black))) ;; nothing can go wrong here
+    ;; insert values into tree
+    (loop for i from 0 to 100 do
+	 (progn
+	   (is (= (treemap-count tree) i))
+	   (setf (get-tree-entry tree i) i)
+	   (is (= (treemap-count tree) (1+ i)))))
+    ;; delete values
+    (loop for i from 100 downto 0 do
+    	 (progn
+    	   (is (= (treemap-count tree) (1+ i)))
+    	   (del-tree-entry tree i)
+    	   (is (= (treemap-count tree) i))))))

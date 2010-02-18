@@ -140,19 +140,7 @@
 
 
 (defmethod treemap-count ((tree redblack-tree-map))
-  "Quick and dirty iterate function. TODO: replace"
-  (let ((num 0))
-    (labels ((recurse-node (node)
-	       (if node
-		   (progn
-		     ;; recurse to the left
-		     (recurse-node (rb-left node))
-		     ;; count this node
-		     (incf num)
-		     ;; recurse to the right
-		     (recurse-node (rb-right node))))))
-      (recurse-node (data tree)))
-    num))
+  (num-elements tree))
 
 
 (defmethod map-tree ((function function) (tree redblack-tree-map))
@@ -210,7 +198,9 @@
 		   (progn
 		     (setf ret-val (rb-value
 				    (setf (data tree) (rb-make-node key value))))
-		     (setf ret-status t))
+		     (setf ret-status t)
+		     ;; update node count
+		     (incf (num-elements tree)))
 
 		   ;; else: tree not empty
 		   (let ((head (rb-make-empty-node))
@@ -231,7 +221,9 @@
 			    (cond ((not q)
 				   ;; insert new node
 				   (setf (rb-child p dir)
-					 (setf q (rb-make-node key))))
+					 (setf q (rb-make-node key)))
+				   ;; update node count
+				   (incf (num-elements tree)))
 
 				  ;; color flip
 				  ((and (is-red (rb-left q))
@@ -349,7 +341,9 @@
 					     (if (eq (rb-right p) q) 'right 'left))
 				   (rb-child q
 					     (if (not (rb-left q)) 'right 'left)))
-			     (setf node-deleted t)))
+			     (setf node-deleted t)
+			     ;; reduce node count
+			     (decf (num-elements tree))))
 		       ;; update root and make it black
 		       (setf (data tree) (rb-right head))
 		       (if (data tree)
