@@ -324,10 +324,11 @@
 
 
 
-(defmethod split-tree ((tree redblack-tree-map) index)
+(defmethod split-tree ((tree redblack-tree-map) (index integer))
   (let ((left-tree (make-tree :test (testfun tree) :type :red-black))
 	(right-tree (make-tree :test (testfun tree) :type :red-black))
 	(i 0))
+    (declare (type integer i))
     ;; function to do the iteration stuff
     (labels ((recurse-node (node)
 	       (if node
@@ -361,7 +362,7 @@
 		   (recurse-node (rb-right node))))))
     (recurse-node (data second)))
   first)
-  
+
 
 
 ;;;
