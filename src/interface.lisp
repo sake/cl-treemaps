@@ -34,6 +34,9 @@
 (defgeneric treemap-count (tree)
   (:documentation "Return the number of elements in the tree."))
 
+(defgeneric map-tree (function tree)
+  (:documentation "Apply function to all elements of the tree in sorted order."))
+
 (defgeneric clr-tree (tree)
   (:documentation "Remove all elements from a tree."))
 
