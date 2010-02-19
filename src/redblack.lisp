@@ -128,6 +128,65 @@
   nil)
 
 
+;;;
+;;; iterator stuff
+;;;
+
+(defmethod tree-iterator-fun ((treemap redblack-tree-map))
+  (let ((iter-fun
+	 (let ((path nil)
+	       (op-path nil)
+	       (value-found nil)
+	       (result nil)
+	       (done-p nil))
+	   (labels
+	       ((iter-fun-intern1 ()
+		  ;; prepare next iteration
+		  (setf value-found nil)
+		  (if (or done-p (not (data treemap)))
+		      nil
+		      (progn
+			;; call function which depends on node
+			(iter-fun-intern2)
+			(if done-p
+			    nil
+			    (values-list result)))))
+
+		(iter-fun-intern2 ()
+		  (if (not path)
+		      ;; add root node if no other path present
+		      (progn
+			(setf path (list (data treemap)))
+			(setf op-path (list 'down-left)))
+		      ;; decide what to do next
+		      (cond ((eq (first op-path) 'down-left) ; last node had down-left
+			     (cond ((rb-left (first path)) ; left child in node
+				    ;; set current to left otherwise it is processed again as a left-down
+				    (setf (first op-path) 'left)
+				    ;; add child to list
+				    (setf path (append (list (rb-left (first path))) path))
+				    (setf op-path (append (list 'down-left) op-path)))
+				   (t                      ; no left child process this one
+				    (setf (first op-path) 'left))))
+			    ((eq (first op-path) 'left) ; node is next
+			     (setf result (list t (rb-key (first path)) (rb-value (first path))))
+			     (setf value-found t)
+			     (setf (first op-path) 'up) ; move up after going back here
+			     (cond ((rb-right (first path)) ; right node present go down
+				    (setf path (append (list (rb-right (first path))) path))
+				    (setf op-path (append (list 'down-left) op-path)))))
+			    ((eq (first op-path) 'up) ; node is done delete
+			     (setf path (rest path))
+			     (setf op-path (rest op-path))
+			     ;; if path is empty we are done
+			     (if (not path)
+				 (setf done-p t)))))
+		  ;; recurse if no value has been found and not done
+		  (if (and (not done-p) (not value-found))
+		      (iter-fun-intern2))))
+
+	     #'iter-fun-intern1))))
+    iter-fun))
 
 
 ;;;

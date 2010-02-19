@@ -55,6 +55,14 @@ node when the tree is seen as a list. The node corresponding to index is include
 (defgeneric merge-trees (first second)
   (:documentation "Merge the second tree into the first."))
 
+(defmacro with-treemap-iterator ((iterator treemap) &body body)
+  (let ((iter-fun (gensym)))
+    `(let ((,iter-fun (tree-iterator-fun ,treemap)))
+       ;; macrolet to inject iterator into body
+       (macrolet ((,iterator ()
+		    '(funcall ,iter-fun)))
+	 ,@body))))
+
 
 ;;;
 ;;; internal functions
@@ -65,3 +73,6 @@ node when the tree is seen as a list. The node corresponding to index is include
 
 (defgeneric tree-dot (tree file)
   (:documentation "Serialise tree as dot file (graphviz)."))
+
+(defgeneric tree-iterator-fun (tree)
+  (:documentation "Internal method to generate an interator function for this tree."))

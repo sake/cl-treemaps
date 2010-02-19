@@ -86,3 +86,17 @@
     	   (is (= (treemap-count tree) (1+ i)))
     	   (del-tree-entry tree i)
     	   (is (= (treemap-count tree) i))))))
+
+(test tree-iterator
+  (let ((tree (make-tree :type :red-black))) ;; nothing can go wrong here
+    ;; insert values into tree
+    (loop for i from 0 to 100 do
+	 (progn
+	   (is (= (treemap-count tree) i))
+	   (setf (get-tree-entry tree i) i)
+	   (is (= (treemap-count tree) (1+ i)))))
+    (with-treemap-iterator (iter tree)
+      (loop for i from 0 to 100 do
+	   (multiple-value-bind (a b c) (iter)
+	     (declare (ignore a c))
+	     (is (= i b)))))))

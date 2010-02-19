@@ -26,4 +26,6 @@
   ;; basic tree operations
   (:export make-tree get-tree-entry del-tree-entry clr-tree treemap-count map-tree)
   ;; split and merge
-  (:export split-tree merge-trees))
+  (:export split-tree merge-trees)
+  ;; iterator
+  (:export with-treemap-iterator))
