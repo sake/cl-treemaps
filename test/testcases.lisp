@@ -99,4 +99,5 @@
       (loop for i from 0 to 100 do
 	   (multiple-value-bind (a b c) (iter)
 	     (declare (ignore a c))
-	     (is (= i b)))))))
+	     (is (= i b))))
+      (is (eq nil (iter))))))
