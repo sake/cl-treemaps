@@ -203,21 +203,12 @@
 
 
 (defmethod map-tree ((function function) (tree redblack-tree-map))
-  "Quick and dirty iterate over all elements. TODO: replace with with-hash-table-iterator"
-  (let ((result nil))
-    (labels ((recurse-node (node)
-	       ;; construct list starting from biggest value and appending the smaller to the front
-	       (if node
-		   (progn
-		     ;; recurse to the right
-		     (recurse-node (rb-right node))
-		     ;; add node to result list
-		     (setf result (append (list (list (rb-key node) (rb-value node)))
-					  (if result (list result))))
-		     ;; recurse to the left
-		     (recurse-node (rb-left node))))))
-      (recurse-node (data tree)))
-    (mapc #'(lambda (x) (funcall function (first x) (second x))) result))
+  (with-treemap-iterator (iter tree)
+    (loop
+       (multiple-value-bind (found-p key value) (iter)
+	 (if found-p
+	     (funcall function key value)
+	     (return)))))
   nil)
 
 
