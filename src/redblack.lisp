@@ -199,6 +199,7 @@
 
 
 (defmethod treemap-count ((tree redblack-tree-map))
+  "The red black tree version runs in O(1)."
   (num-elements tree))
 
 
@@ -213,7 +214,9 @@
 
 
 (defmethod clr-tree ((tree redblack-tree-map))
+  "This method runs in O(1)."
   (setf (data tree) nil)
+  (setf (num-elements tree) 0)
   tree)
 
 
