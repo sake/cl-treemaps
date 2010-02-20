@@ -39,13 +39,6 @@ t if the first argument is less than the second and return nil otherwise."
   (:documentation "Return the number of elements in the tree."))
 
 
-(defgeneric map-tree (function tree)
-  (:documentation "Apply function to all elements of the tree in sorted order.
-
-Exactly like hash maps, the behaviour is undefined when the tree is altered while
-the function runs. nil is always returned."))
-
-
 (defgeneric clr-tree (tree)
   (:documentation "Remove all elements from the tree.
 The empty tree is returned, which is the same object as supplied."))
@@ -82,6 +75,13 @@ node corresponding to index is included in the second tree."))
 
 (defgeneric merge-trees (first second)
   (:documentation "Merge the second tree into the first one The second tree is left untouched."))
+
+
+(defgeneric map-tree (function tree)
+  (:documentation "Apply function to all elements of the tree in sorted order.
+
+Exactly like hash maps, the behaviour is undefined when the tree is altered while
+the function runs. nil is always returned."))
 
 
 (defmacro with-treemap-iterator ((iterator treemap) &body body)
