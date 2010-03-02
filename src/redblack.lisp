@@ -25,36 +25,26 @@
 
 
 (defclass redblack-tree-map (tree-map)
-  ((data    :accessor data :initform nil
+  ((data    :accessor data :initform nil :type redblack-node
 	    :documentation "A node consists of the values key, data, color, left, right.")
    (num-elements :accessor num-elements :initform 0)
    (testfun :accessor testfun :initarg :testfun :initform (error "No test function specified.")))
   (:documentation "Red-Black tree."))
 
 
+(defstruct (redblack-node
+	     (:conc-name rb-))
+  (key)
+  (value)
+  (color 'red :type symbol)
+  (left nil)
+  (right nil))
+
+
 
 ;;;
 ;;; internal helper functions
 ;;;
-
-(defun rb-key (node &optional (value nil update?))
-  (if update?
-      (setf (first node) value)
-      (first node)))
-(defsetf rb-key rb-key)
-
-(defun rb-value (node &optional (value nil update?))
-  (if update?
-      (setf (second node) value)
-      (second node)))
-(defsetf rb-value rb-value)
-
-
-(defun rb-color (node &optional (value nil update?))
-  (if update?
-      (setf (third node) value)
-      (third node)))
-(defsetf rb-color rb-color)
 
 (defun is-red (node)
   (and node
@@ -68,25 +58,13 @@
   (if (eq direction 'left)
       ;; get left child
       (if update?
-	  (setf (fourth node) value)
-	  (fourth node))
+	  (setf (rb-left node) value)
+	  (rb-left node))
       ;; get right child
       (if update?
-	  (setf (fifth node) value)
-	  (fifth node))))
+	  (setf (rb-right node) value)
+	  (rb-right node))))
 (defsetf rb-child rb-child)
-
-(defun rb-left (node &optional (value nil update?))
-  (if update?
-      (setf (rb-child node 'left) value)
-      (rb-child node 'left)))
-(defsetf rb-left rb-left)
-
-(defun rb-right (node &optional (value nil update?))
-  (if update?
-      (setf (rb-child node 'right) value)
-      (rb-child node 'right)))
-(defsetf rb-right rb-right)
 
 
 (defun not-dir (direction)
@@ -109,13 +87,6 @@
   (setf (rb-child root (not-dir direction))
 	(rb-rotate-single (rb-child root (not-dir direction)) (not-dir direction)))
   (rb-rotate-single root direction))
-
-
-(defun rb-make-node (key &optional (value nil))
-  (list key value 'red nil nil))
-
-(defun rb-make-empty-node ()
-  (list nil nil 'red nil nil))
 
 
 (defun rb-set-node (old new)
@@ -250,13 +221,13 @@
 		   ;; nothing in this tree yet
 		   (progn
 		     (setf ret-val (rb-value
-				    (setf (data tree) (rb-make-node key value))))
+				    (setf (data tree) (make-redblack-node :key key :value value))))
 		     (setf ret-status t)
 		     ;; update node count
 		     (incf (num-elements tree)))
 
 		   ;; else: tree not empty
-		   (let ((head (rb-make-empty-node))
+		   (let ((head (make-redblack-node))
 			 (g) (t-node) ; grandparent & parent
 			 (p) (q) ; iterator & parent
 			 (dir 'left)
@@ -274,7 +245,7 @@
 			    (cond ((not q)
 				   ;; insert new node
 				   (setf (rb-child p dir)
-					 (setf q (rb-make-node key)))
+					 (setf q (make-redblack-node :key key)))
 				   ;; update node count
 				   (incf (num-elements tree)))
 
@@ -334,7 +305,7 @@
 	     (local-delete ()
 	       (if (data tree)
 		   (progn
-		     (let ((head (rb-make-empty-node))
+		     (let ((head (make-redblack-node))
 			   (q) (p) (g) ; helpers
 			   (f) ; found item
 			   (dir 'right))
