@@ -28,7 +28,7 @@
   :description "Common Lisp binary trees"
   :author "Tobias Wich <tobias.wich@electrologic.org>"
   :version "0.1"
-  :license "BSD"
+  :license "LGPL"
   :components
   ((:module src
 	    :serial t
